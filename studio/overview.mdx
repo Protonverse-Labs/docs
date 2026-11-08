@@ -1,0 +1,61 @@
+---
+title: "Protonverse Studio"
+description: "A browser-based development environment for Proton AI Core boards: block code, MicroPython, Arduino and ESP-IDF in one tab. What the public demo shows, and what is not live yet."
+---
+
+**Protonverse Studio** is a browser-based development environment for Proton AI Core boards. You write code with blocks or in a text editor, switch between MicroPython, Arduino and ESP-IDF views, and watch camera, microphone, IMU and SD card panels next to the editor.
+
+<CardGroup cols={2}>
+  <Card title="Try the demo" icon="play" href="https://studio.protonverse.io/demo">
+    Opens in your browser. No account and no board needed.
+  </Card>
+  <Card title="Studio home page" icon="globe" href="https://studio.protonverse.io">
+    An overview of Studio at studio.protonverse.io.
+  </Card>
+</CardGroup>
+
+<Note>
+  **Status:** the public site at studio.protonverse.io is currently a **demo**. Connecting a real board over USB, accounts, real compilation and flashing belong to the full Studio and are not available on the public site yet.
+</Note>
+
+## What the demo shows
+
+The demo is built so you can see the interface without owning a board. Some of what you see is real and some is simulated:
+
+| Part of the demo | What it does | Real or simulated |
+| - | - | - |
+| Camera panel | Plays a recording from a physical board, with person-detection boxes drawn on the frames | Real recording |
+| Serial Monitor | Shows the text lines from that same recording | Real recording |
+| SD panel | Lists a few sample files you can open | Sample files |
+| Microphone, IMU, LED and Wi-Fi panels | Show plausible changing values | Simulated |
+| Compile and upload | Shows build output generated from your code, after a basic syntax check | Simulated. Nothing is compiled and nothing is flashed |
+| AI assistant | Answers a fixed set of sample questions | Prepared answers |
+| Export | Downloads the code in the editor as a file | Real |
+| Connect GitHub | Shows what repository linking will look like | Illustration only, not active |
+
+## Editor
+
+- **Blocks:** a block editor that generates MicroPython. Categories include Servo, IMU, Microphone, Camera, LED, Wi-Fi, SD and Control, plus the usual Logic, Math, Text and loop blocks.
+- **Arduino IDE, MicroPython and ESP-IDF:** text editor views with starter code for each language.
+- **Snippet library:** a drawer that opens from the side of the editor, with ready-made snippets for Arduino, MicroPython and ESP-IDF.
+- **Languages:** the interface is available in English and Turkish.
+
+## Studio and the board
+
+Studio is **not required** to use the board. The firmware and examples in the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus) work on their own with Arduino IDE, as described in the [Quick Start](/getting-started/quickstart).
+
+Studio's live board features talk to the board over a Protonverse serial protocol. The published Arduino firmware (V20) does not implement that protocol, so it is a standalone firmware with a text command interface, as described in the [Firmware guide](/guides/firmware). The board firmware that Studio uses is separate from V20.
+
+Connecting a real board from the browser uses WebSerial, which is available in **Chrome and Edge** only. Safari and Firefox do not support it.
+
+## Privacy
+
+The demo does not ask for an email address, an account or any personal information. It counts visits anonymously, without cookies, and stores no personal data.
+
+## Get a board
+
+Proton AI Core Vision+ is a working hardware prototype, and a pre-launch page is live on Crowd Supply.
+
+<Card title="Proton AI Core Vision+ on Crowd Supply" icon="arrow-up-right-from-square" href="https://www.crowdsupply.com/protonverse-labs/proton-ai-core-vision-plus">
+  Follow the project to be notified when the campaign goes live.
+</Card>

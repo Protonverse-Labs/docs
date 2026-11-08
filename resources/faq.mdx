@@ -1,0 +1,43 @@
+---
+title: "FAQ"
+description: "Answers about Proton AI Core Vision+: supported tools, camera, AI, openness, availability and contributing."
+---
+
+<AccordionGroup>
+  <Accordion title="What is Proton AI Core Vision+?">
+    An ESP32-S3-based hardware board with an onboard OV5640 camera, IMU, secure element, I/O expander, microphone and microSD storage, made by Protonverse Labs. It is a developer-focused platform, currently at the working-hardware-prototype stage.
+  </Accordion>
+  <Accordion title="Which development environment is supported?">
+    The Arduino ESP32 core, through Arduino IDE. See [Arduino IDE setup](/setup/arduino). ESP-IDF and PlatformIO have not been set up or tested for this firmware, see [PlatformIO](/setup/platformio).
+  </Accordion>
+  <Accordion title="Which camera does the board use?">
+    The onboard OV5640, 5 MP, on the board's 24-pin FPC camera connector. See the [Camera guide](/guides/camera).
+  </Accordion>
+  <Accordion title="Does the board include on-device AI acceleration?">
+    Not currently. "AI" is part of the Protonverse name and the board is meant as a platform for camera and vision projects, but there is no dedicated neural processing unit and no on-device inference in the current firmware. See [AI inference](/guides/ai-inference). This may change in the future, see the [Roadmap](/resources/roadmap).
+  </Accordion>
+  <Accordion title="Does the board support Bluetooth?">
+    Bluetooth is not implemented in the current firmware. Wi-Fi is, and it is used for camera streaming and the onboard HTTP server, see [Wi-Fi and Bluetooth](/guides/wifi-bluetooth).
+  </Accordion>
+  <Accordion title="Do I need a USB driver?">
+    No additional driver has been reported as necessary. The board uses the ESP32-S3's native USB as a CDC serial port. See [USB drivers](/setup/drivers). If no port appears, see [Troubleshooting](/resources/troubleshooting#board-not-detected-or-upload-fails).
+  </Accordion>
+  <Accordion title="Is the firmware open?">
+    Yes. The Arduino firmware in the repository is the actual working firmware used to test the hardware, not a simplified stand-in. It is MIT licensed.
+  </Accordion>
+  <Accordion title="Is Protonverse Studio required to use this board?">
+    No. The firmware and examples work on their own with the Arduino IDE. Protonverse Studio is a separate software platform in the Protonverse ecosystem and is not required to flash or use the board. You can try its browser demo at [studio.protonverse.io](https://studio.protonverse.io), and [Protonverse Studio](/studio/overview) explains what it does today.
+  </Accordion>
+  <Accordion title="Is the board available yet?">
+    Not yet. It is a functional hardware prototype and mass production has not launched. A pre-launch page is live on [Crowd Supply](https://www.crowdsupply.com/protonverse-labs/proton-ai-core-vision-plus), where you can follow the project. See [Project status](/resources/project-status).
+  </Accordion>
+  <Accordion title="Is the hardware fully open source?">
+    Not fully. The schematic, a parts-level BOM and the documentation are published under CERN-OHL-P v2 so developers can understand, verify and build on the board. PCB layout files, Gerbers and the production BOM are intentionally not published. See [Downloads](/resources/downloads).
+  </Accordion>
+  <Accordion title="How can I contribute?">
+    Bug reports, documentation improvements, new examples and firmware pull requests are welcome. See the repository's [CONTRIBUTING.md](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/CONTRIBUTING.md).
+  </Accordion>
+  <Accordion title="Where do I report a security issue?">
+    See [SECURITY.md](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/SECURITY.md). Please do not open a public issue for security reports.
+  </Accordion>
+</AccordionGroup>

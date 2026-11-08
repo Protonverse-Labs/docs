@@ -1,0 +1,90 @@
+---
+title: "Camera guide"
+description: "Initialize the OV5640, capture JPEG frames over serial, stream MJPEG over Wi-Fi, and choose a resolution preset."
+---
+
+## Sensor
+
+Proton AI Core Vision+ uses an **OV5640** image sensor, 5 MP (2592×1944 array), on a 24-pin FPC camera module (part `SF4V564088BYC-ESP` per the module datasheet). Lens: 3.0 mm EFL, F2.2, 76.6° field of view, 1/4" optical format.
+
+## Connector and orientation
+
+Module details and reseating steps are on the [Cameras](/hardware/cameras) page.
+
+The camera module connects to the board through a 24-pin FPC cable into connector J1. Install it with the cable contacts facing the board, so the contacts and the PCB connector fingers line up. If you are unsure, compare with the photos in the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/assets/board). The camera is pre-attached on the reference hardware shown in those photos.
+
+<Warning>
+  Connect or disconnect the camera cable with the board unpowered, and make sure it is fully seated. A partly seated cable is the most common cause of `Camera init FAILED`.
+</Warning>
+
+## How the firmware initializes it
+
+The camera is driven by the ESP32 `esp_camera` driver. `initCamera()` in the firmware configures:
+
+- an 8-bit parallel data bus plus SCCB (I2C) control (see the [Pinout](/hardware/pinout))
+- JPEG output format
+- the frame buffer in PSRAM, falling back to DRAM with a single QVGA frame buffer if PSRAM is not detected
+- `CAMERA_GRAB_LATEST` grab mode, with 2 frame buffers when PSRAM is available
+
+## What has been tested
+
+<CardGroup cols={2}>
+  <Card title="Detection and init" icon="check">Tested, working</Card>
+  <Card title="Single JPEG capture" icon="check">Tested, working</Card>
+  <Card title="MJPEG streaming over Wi-Fi" icon="check">Tested, working, in a browser</Card>
+  <Card title="Flashing with camera code" icon="check">Tested, working</Card>
+</CardGroup>
+
+## Resolution presets
+
+Four presets are available and are applied separately to single-shot capture and to streaming:
+
+| Preset | Frame size | Resolution | Default JPEG quality |
+| - | - | - | -: |
+| `low` | QVGA | 320×240 | 14 |
+| `medium` | VGA | 640×480 | 12 |
+| `high` | SVGA | 800×600 | 10 |
+| `veryhigh` | XGA | 1024×768 | 8 |
+
+Set them over serial with `capture_res <preset>` for single-shot capture and `stream_res <preset>` for streaming.
+
+<Note>
+  Achieved frame rate and image-quality benchmarks have **not** been measured or published. Do not assume a specific FPS until it has been measured on hardware. See [Project status](/resources/project-status).
+</Note>
+
+## Using the camera
+
+<Tabs>
+  <Tab title="Single JPEG over serial">
+    ```text
+    cam_init
+    cam_capture
+    ```
+
+    Expect a line like `JPEG OK: <bytes> bytes, <width>x<height>, format=<n>` in the Serial Monitor.
+  </Tab>
+  <Tab title="MJPEG stream in a browser">
+    This needs Wi-Fi credentials in the firmware (see [Arduino IDE setup](/setup/arduino)).
+
+    ```text
+    wifi
+    stream_on
+    ip
+    ```
+
+    Open the printed `/stream` address in a browser. The stream closes automatically after `stream_timeout` milliseconds (default 15000). While a browser is connected, `/stream` blocks the serial command interface, so keep the timeout short for interactive use.
+  </Tab>
+  <Tab title="Single JPEG over HTTP">
+    Once Wi-Fi is connected, open `http://<board-ip>/jpg` in a browser.
+  </Tab>
+</Tabs>
+
+## Known limitations
+
+- The camera's SCCB lines share **GPIO17 and GPIO18** with the main I2C bus. The `cam_off` command deinitializes the camera and runs an I2C bus-recovery sequence, which you need before the IMU, secure element or expander can be tested reliably.
+- While `/stream` is open in a browser, the serial command interface is blocked until the client disconnects or the stream times out.
+- No on-device object detection or image AI is implemented in the current firmware. See [Project status](/resources/project-status).
+
+## Troubleshooting
+
+Camera-specific failure modes (init failure, blank stream, capture failure) are covered in [Troubleshooting](/resources/troubleshooting#camera-init-fails).

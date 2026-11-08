@@ -1,0 +1,41 @@
+---
+title: "Downloads"
+description: "The schematic, parts-level BOM, firmware, examples and licenses for Proton AI Core Vision+, all in the public GitHub repository."
+---
+
+Everything below is published in the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus).
+
+## Hardware documentation
+
+| File | Description |
+| - | - |
+| [Schematic (PDF)](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/hardware/Schematic.pdf) | The full board schematic: ESP32-S3 module, camera interface, power system and every onboard peripheral |
+| [Parts-level BOM (CSV)](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/hardware/BOM.csv) | Reference designators, values, manufacturer part numbers and short descriptions, derived from the schematic |
+| [Board photos](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/assets/board) | Top and bottom views of the assembled board |
+
+<Note>
+  The BOM is parts-level, **not** the production BOM. It has no supplier names, supplier part numbers, pricing or order quantities.
+</Note>
+
+## Firmware and examples
+
+| Resource | Description |
+| - | - |
+| [Firmware V20](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/firmware/proton-ai-core-vision-plus) | The Arduino sketch used to test the hardware, MIT licensed |
+| [Example sketches](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/examples) | Camera capture, Wi-Fi camera stream and status LED |
+| [Whole repository (ZIP)](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/archive/refs/heads/main.zip) | Firmware, examples, documentation, schematic and BOM in one download |
+
+The ESP32 Arduino core is installed from Boards Manager, as described in [Arduino IDE setup](/setup/arduino).
+
+## Licenses
+
+| Covers | License |
+| - | - |
+| Firmware and example sketches | [MIT](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/LICENSE-MIT) |
+| Schematic, parts-level BOM, documentation | [CERN-OHL-P v2](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/LICENSE) (permissive) |
+
+"Protonverse", "Protonverse Labs" and "Proton AI Core" are trademarks and are not licensed under either license. You may build on, modify and sell derivative work under your own name.
+
+## Not published
+
+PCB layout source files, Gerbers, NC drill files, pick-and-place data, panelization files and the production BOM are intentionally not published. The repository is meant to let you understand the board, verify its wiring, source the same parts and build on the design, not to provide a ready-to-clone manufacturing package.

@@ -1,0 +1,141 @@
+---
+title: "Quick Start"
+description: "Install the tools, flash the firmware over USB-C and take your first camera capture."
+---
+
+This walkthrough assumes no prior experience with this project. If you already know Arduino/ESP32 development, steps 1 to 5 are all you need.
+
+## What you need
+
+- A Proton AI Core Vision+ board
+- A **data-capable** USB-C cable (not a power-only cable)
+- A computer with [Arduino IDE](https://www.arduino.cc/en/software) 2.x
+- Optional: a 2.4 GHz Wi-Fi network, for camera streaming
+- Optional: a microSD card, to test storage
+
+<Note>
+  The firmware is built for the **Arduino ESP32 core** and flashed through the Arduino IDE. ESP-IDF and PlatformIO project files are not provided, and those toolchains have not been tested with this firmware (see [PlatformIO](/setup/platformio)).
+</Note>
+
+## Flash the firmware
+
+<Steps>
+  <Step title="Install the ESP32 board package">
+    In Arduino IDE open **Tools → Board → Boards Manager**, search for `esp32` and install the package by **Espressif Systems**. See [Arduino IDE setup](/setup/arduino) if you need to add the board index URL.
+  </Step>
+  <Step title="Install the one required library">
+    Open **Tools → Manage Libraries**, search for `Adafruit NeoPixel` and install it. Everything else the firmware uses ships with the ESP32 board package.
+  </Step>
+  <Step title="Connect the board">
+    Plug the board in with the USB-C cable. It uses the ESP32-S3's native USB as a serial port, and no extra USB driver has been reported as necessary (see [USB drivers](/setup/drivers)). If no port appears, see [Troubleshooting](/resources/troubleshooting#board-not-detected-or-upload-fails).
+  </Step>
+  <Step title="Get the firmware">
+    ```bash
+    git clone https://github.com/Protonverse-Labs/proton-ai-core-vision-plus.git
+    cd proton-ai-core-vision-plus
+    ```
+    Then open `firmware/proton-ai-core-vision-plus/Proton_AI_CoreVision_Firmware_V20.ino` in Arduino IDE.
+  </Step>
+  <Step title="Choose the board settings">
+    In the **Tools** menu set exactly these values:
+
+    | Setting | Value |
+    | - | - |
+    | Board | ESP32S3 Dev Module |
+    | USB CDC On Boot | Enabled |
+    | PSRAM | OPI PSRAM / Enabled |
+    | Flash Size | 16MB |
+    | Partition Scheme | Huge APP |
+    | Port | The board's serial port |
+
+    <Warning>
+      Different flash, PSRAM or partition settings can cause boot failures or camera initialization failures.
+    </Warning>
+  </Step>
+  <Step title="Optional: set Wi-Fi credentials">
+    Camera streaming and the HTTP endpoints need Wi-Fi. Edit these two lines near the top of the `.ino` file:
+
+    ```cpp
+    const char* WIFI_SSID = "YOUR_WIFI_SSID";
+    const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
+    ```
+
+    Skip this if you only use the serial commands. Camera capture over serial, LED control and the I2C, SD and microphone tests do not need Wi-Fi.
+  </Step>
+  <Step title="Upload">
+    Click **Upload**. The first compile can take a few minutes.
+  </Step>
+</Steps>
+
+## First boot
+
+Open **Tools → Serial Monitor**, set it to `115200` baud with line ending **Newline** or **Both NL & CR**. You should see a boot banner, the command list and a status block, roughly:
+
+```text
+Proton AI Core-Vision ESP32-S3 standalone firmware v20
+
+==== Proton AI Core-Vision Commands ====
+Basic: help, status, pins, reboot
+I2C: i2c, i2c_reset, pca_scan, imu, crypto, atecc, secure
+WiFi: wifi, ip
+Camera: cam_init, cam_capture, stream_on, stream_off, cam_off, camera_off
+...
+
+==== Status ====
+PSRAM: YES, heap=..., psram=..., minHeap=...
+WiFi: OFF/FAILED
+Camera: NOT INIT
+Stream: DISABLED
+...
+I2C status using raw ACK check:
+  PCA9685    0x40: OK, code=0
+  ATECC608B  0x60: OK, code=0
+  ICM42670   0x69: OK, code=0
+```
+
+<Note>
+  The firmware's boot banner still prints "Proton AI Core-Vision", while the product name used in this documentation is Proton AI Core Vision+. They refer to the same board.
+</Note>
+
+If the three I2C devices do not report `OK`, fix that before continuing. See [Troubleshooting](/resources/troubleshooting#i2c-device-not-found).
+
+## Take your first photo
+
+Type each command in the Serial Monitor input and press Enter:
+
+```text
+cam_init
+cam_capture
+```
+
+Expected output:
+
+```text
+Camera detected. PID=0x... VER=... MIDH=... MIDL=...
+Camera init OK.
+JPEG OK: <bytes> bytes, 640x480, format=1
+```
+
+## Optional: first Wi-Fi stream
+
+```text
+wifi
+stream_on
+ip
+```
+
+Open the printed `http://<ip>/stream` address in a browser to see the live MJPEG stream. The [Camera guide](/guides/camera) explains the stream's auto-timeout.
+
+## Most common first-time problems
+
+- Wrong **Tools** settings, especially PSRAM, flash size and partition scheme
+- The camera FPC cable is not fully seated
+- Wi-Fi credentials not set, or a 5 GHz-only network (the ESP32-S3 supports 2.4 GHz only)
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Camera guide" icon="camera" href="/guides/camera" />
+  <Card title="Firmware guide" icon="terminal" href="/guides/firmware" />
+  <Card title="Example projects" icon="code" href="/guides/examples" />
+</CardGroup>

@@ -1,0 +1,33 @@
+---
+title: "PlatformIO"
+description: "PlatformIO status for Proton AI Core Vision+: not yet set up or tested, and the settings any PlatformIO project would need to reproduce."
+---
+
+## Status
+
+**PlatformIO has not been set up or tested for this firmware.** The published firmware is a single Arduino sketch built through Arduino IDE, and ESP-IDF and PlatformIO project files are not provided. This page does not include a `platformio.ini` because one that has not been verified on the board would be a guess.
+
+If you want a supported, tested path today, use [Arduino IDE](/setup/arduino).
+
+## What a PlatformIO project would need to match
+
+The firmware's own header comment lists the settings that are required for a correct build. Any PlatformIO configuration has to reproduce them:
+
+| Arduino IDE setting | Value |
+| - | - |
+| Board | ESP32S3 Dev Module |
+| USB CDC On Boot | Enabled |
+| PSRAM | OPI PSRAM / Enabled |
+| Flash Size | 16MB |
+| Partition Scheme | Huge APP |
+| Serial Monitor | 115200 baud |
+
+The only library that has to be installed separately is `Adafruit NeoPixel`. The other libraries (`WiFi`, `WebServer`, `Wire`, `SPI`, `SD`, `Preferences`, `esp_camera`, `driver/i2s`) come with the ESP32 Arduino core.
+
+<Warning>
+  Different flash, PSRAM or partition settings can cause boot failures or camera initialization failures. If you try PlatformIO, verify the result on real hardware with `status`, `cam_init` and `cam_capture`.
+</Warning>
+
+## Share what works
+
+If you get the firmware running under PlatformIO, please share the configuration through a pull request or issue on the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus). Community contributions are listed in the [Roadmap](/resources/roadmap).

@@ -1,0 +1,56 @@
+---
+title: "Wi-Fi and Bluetooth"
+description: "How the firmware connects to Wi-Fi and which HTTP endpoints it serves. Bluetooth is not implemented in the current firmware."
+---
+
+## Wi-Fi
+
+Wi-Fi uses the ESP32-S3's built-in radio. The firmware uses it for two things: camera streaming and a small onboard HTTP server.
+
+<Warning>
+  Only **2.4 GHz** networks work. The ESP32-S3 does not support 5 GHz Wi-Fi, so a 5 GHz-only network will not connect.
+</Warning>
+
+### Set your credentials
+
+Credentials are set in the firmware source and cannot be changed over serial at runtime. Edit these two lines near the top of the `.ino` file and flash again:
+
+```cpp
+const char* WIFI_SSID = "YOUR_WIFI_SSID";
+const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
+```
+
+The published copy uses placeholders. Do not commit real credentials back to a shared or public copy.
+
+### Connect
+
+In the Serial Monitor at `115200` baud:
+
+```text
+wifi
+ip
+```
+
+`wifi` connects to the configured network and `ip` prints the board's address. If the connection fails within 20 seconds the firmware prints `WiFi FAILED.`, and [Troubleshooting](/resources/troubleshooting#wi-fi-cannot-connect) lists what to check.
+
+## HTTP endpoints
+
+Once Wi-Fi is connected, the board serves:
+
+| Path | Returns |
+| - | - |
+| `/` | A link page |
+| `/jpg` | A single JPEG capture |
+| `/stream` | An MJPEG stream. Enable it first with `stream_on` over serial, otherwise it returns `403` |
+
+Open `http://<board-ip>/stream` or `http://<board-ip>/jpg` in a browser. While a client is connected to `/stream` the serial command interface is blocked, and the stream closes by itself after `stream_timeout` milliseconds (default 15000). Resolution presets, frame-rate target and the other stream settings are in the [Camera guide](/guides/camera) and the [Firmware guide](/guides/firmware).
+
+For a minimal starting point, the [Wi-Fi camera stream example](/guides/examples#02-wi-fi-camera-stream) does only this.
+
+<Note>
+  Wireless range, throughput and power consumption have not been measured, so no figures are published.
+</Note>
+
+## Bluetooth
+
+**Bluetooth is not implemented in the current firmware.** There is no Bluetooth or BLE code in the published sketch, and no Bluetooth feature is claimed for the board. If this changes it will be added to the [Roadmap](/resources/roadmap).

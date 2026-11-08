@@ -1,0 +1,102 @@
+---
+title: "Example projects"
+description: "Three small sketches extracted from the working firmware: camera capture, a Wi-Fi MJPEG stream, and LED control."
+---
+
+These sketches are extracted from the working firmware. Start with one of them instead of the full firmware if you only need a single subsystem. All three are in the [`examples/` folder](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/examples) of the repository and are MIT licensed.
+
+For all three, use these **Tools** settings: Board `ESP32S3 Dev Module`, USB CDC On Boot `Enabled`, PSRAM `OPI PSRAM / Enabled`, Flash Size `16MB`, Partition Scheme `Huge APP`. See [Arduino IDE setup](/setup/arduino).
+
+<CardGroup cols={3}>
+  <Card title="01 Camera capture" icon="camera" href="#01-camera-capture">
+    Capture one JPEG frame over serial.
+  </Card>
+  <Card title="02 Wi-Fi camera stream" icon="wifi" href="#02-wi-fi-camera-stream">
+    Serve a live MJPEG stream over HTTP.
+  </Card>
+  <Card title="03 Status LED" icon="lightbulb" href="#03-status-led">
+    Drive the RGB and 1 W LEDs over serial.
+  </Card>
+</CardGroup>
+
+## 01 Camera capture
+
+Initializes the OV5640 and captures a single JPEG frame over serial, with no Wi-Fi or other subsystems. A good base if you only need capture, for example to save frames to microSD.
+
+**Needs:** the board with the camera attached, Arduino IDE 2.x with the ESP32 package, and a USB-C cable. No extra libraries.
+
+Open `01_camera_capture.ino`, upload, then open the Serial Monitor at `115200` baud and type:
+
+```text
+cam_init
+cam_capture
+```
+
+Expected output:
+
+```text
+Camera init OK.
+JPEG OK: 34521 bytes, 640x480, format=1
+```
+
+The byte count varies per frame. The resolution defaults to VGA 640×480 when PSRAM is available and QVGA 320×240 otherwise. If you see `Camera init FAILED: 0x...`, check that the FPC cable is fully seated and that PSRAM is enabled. See [Troubleshooting](/resources/troubleshooting#camera-init-fails).
+
+## 02 Wi-Fi camera stream
+
+Connects to Wi-Fi and serves a live MJPEG stream over HTTP, with no serial commands or LED control. A base for a standalone network camera or your own HTTP endpoints.
+
+**Needs:** the board with the camera attached, a USB-C cable, and a **2.4 GHz** Wi-Fi network.
+
+Open `02_wifi_camera_stream.ino` and put your credentials in the two lines near the top:
+
+```cpp
+const char* WIFI_SSID = "YOUR_WIFI_SSID";
+const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
+```
+
+Upload and open the Serial Monitor at `115200` baud. On boot you should see:
+
+```text
+Connecting to WiFi SSID: YOUR_WIFI_SSID
+.....
+WiFi OK. IP: 192.168.1.42
+Open: http://192.168.1.42/stream
+```
+
+Open the printed address in a browser. The stream is QVGA 320×240 with a 15 FPS target and closes after 15 seconds to free the camera, so refresh the page to reconnect. If you see `WiFi FAILED`, check the credentials and that the network is 2.4 GHz. For adjustable resolution and FPS with a serial command interface, use the full firmware.
+
+## 03 Status LED
+
+Drives the onboard addressable RGB LED (WS2812B) and the 1 W LED over serial commands, with no camera or Wi-Fi.
+
+**Needs:** the board, a USB-C cable, and the **Adafruit NeoPixel** library from Library Manager.
+
+Open `03_status_led.ino`, upload, open the Serial Monitor at `115200` baud and try:
+
+<Tabs>
+  <Tab title="RGB LED">
+    ```text
+    rgb 0 80 0
+    ```
+    The RGB LED turns green.
+  </Tab>
+  <Tab title="1 W LED, half brightness">
+    ```text
+    led pwm
+    led level 128
+    ```
+    The 1 W LED turns on at roughly half brightness.
+  </Tab>
+  <Tab title="1 W LED, blink">
+    ```text
+    led blink
+    ```
+    The 1 W LED blinks 5 times.
+  </Tab>
+</Tabs>
+
+The RGB LED uses GRB color order, which the sketch handles with the `NEO_GRB` flag. If colors look swapped, check your `rgb <r> <g> <b>` argument order. If nothing lights up, confirm the NeoPixel library is installed and the sketch compiled without errors.
+
+## More examples
+
+More examples will be added as they are extracted from working code and verified. Community examples are welcome as pull requests, as described in the repository's [CONTRIBUTING.md](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/CONTRIBUTING.md).

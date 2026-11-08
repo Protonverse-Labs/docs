@@ -1,0 +1,78 @@
+---
+title: "Troubleshooting"
+description: "Known failure modes of Proton AI Core Vision+ and its firmware, with the exact messages the firmware prints."
+---
+
+Each failure mode below is either implemented in the firmware, with the exact message it prints, or well-known ESP32-S3 and Arduino IDE behavior. Nothing here is a claimed hardware defect specific to this board.
+
+## Board not detected or upload fails
+
+- Use a USB-C cable that carries data, not a power-only cable.
+- Set **USB CDC On Boot: Enabled** in the Tools menu. The board uses the ESP32-S3's native USB as its serial console, and with this setting wrong the port may not appear.
+- If the upload still does not start, hold **BOOT**, tap **RESET**, then release **BOOT** to force bootloader mode, and upload again. This is the standard ESP32-S3 procedure.
+- Try another USB port or cable.
+
+## Serial output missing or garbled
+
+- Set the Serial Monitor to **115200 baud**.
+- Make sure you selected the correct port after connecting the board.
+- If output is garbled right after flashing, press **RESET** once the upload finishes.
+
+## Camera init fails
+
+The firmware prints `Camera init FAILED: 0x<code>` when `esp_camera_init()` returns an error.
+
+- Check that the camera FPC cable is fully seated, with the contacts facing the right way. See the [Camera guide](/guides/camera#connector-and-orientation).
+- Run `cam_off`, then `cam_init`, to force a clean re-init and an I2C bus recovery.
+- Confirm **PSRAM: OPI PSRAM / Enabled** in your build settings. Without PSRAM the firmware falls back to a smaller DRAM frame buffer and reduced settings.
+
+## Capture fails
+
+The firmware prints `Capture FAILED.`
+
+- Run `cam_init` first if you have not already.
+- Try a lower resolution with `capture_res low`.
+- Check free memory with `status`. Low free PSRAM or heap can make captures fail at higher resolutions.
+
+## Blank or missing MJPEG stream
+
+- Send `stream_on` over serial before opening `/stream`. Otherwise the endpoint returns `403` with "stream disabled; send stream_on over Serial".
+- Check that Wi-Fi is connected: run `wifi`, then `ip` for the board's address.
+- `/stream` blocks the serial command interface while a client is connected. That is expected, not a fault. Close the browser tab or wait for the auto-timeout (`stream_timeout`, default 15000 ms) to get serial control back.
+
+## Wi-Fi cannot connect
+
+The firmware prints `WiFi FAILED.` if it cannot connect within 20 seconds.
+
+- Double-check `WIFI_SSID` and `WIFI_PASS` in the firmware source. Only **2.4 GHz** networks work, because the ESP32-S3 does not support 5 GHz Wi-Fi.
+- Re-flash after correcting the credentials. The firmware cannot set Wi-Fi credentials over serial at runtime.
+
+## I2C device not found
+
+This covers the IMU, the secure element and the I/O expander. The `status` and `i2c` commands report a per-device result such as `OK`, `ADDR_NACK` or `TIMEOUT`.
+
+- If the camera was recently active, run `cam_off` first. The camera's SCCB lines share the I2C bus (GPIO17 and GPIO18), and `cam_off` runs a bus-recovery sequence.
+- Run `i2c_reset` to recover the bus manually, then try again.
+
+## microSD mount fails
+
+The firmware prints `SD mount FAILED at all speeds.` after trying 400 kHz to 20 MHz.
+
+- Make sure the card is formatted. FAT32 is the most broadly compatible format for this class of card.
+- Reseat the card in the push-push slot.
+- Try a different microSD card. Not every card is guaranteed to work.
+
+## Microphone read fails
+
+The firmware prints `I2S driver install FAILED.`, `I2S pin setup FAILED.` or `I2S mic read FAILED.`, depending on where it fails.
+
+- Run `mic` again. The firmware uninstalls and reinstalls the I2S driver on every call.
+- If it keeps failing, note the exact message when you report an issue.
+
+## Reboot loop during `cam_reboot_test`
+
+`cam_reboot_test <1-20>` is an intentional stress test. It reboots the board N times, re-initializes the camera after each reboot and keeps its progress in NVS. If it does not finish, run `cam_reboot_clear` over serial to reset the test state.
+
+## Still stuck?
+
+Open an issue with the [Hardware Question template](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/issues/new/choose) and include the output of the `status` command and the exact error text.

@@ -1,0 +1,76 @@
+---
+title: "Firmware guide"
+description: "How the open Arduino firmware is organized, which build settings it needs, and the complete serial command reference."
+---
+
+## Framework
+
+The firmware is built on the **Arduino ESP32 core**, not ESP-IDF directly and not PlatformIO. It is a single Arduino sketch, `firmware/proton-ai-core-vision-plus/Proton_AI_CoreVision_Firmware_V20.ino` in the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/firmware/proton-ai-core-vision-plus), licensed MIT.
+
+## Required build settings
+
+These come from the firmware file's own header comment:
+
+| Setting | Value |
+| - | - |
+| Board | ESP32S3 Dev Module |
+| USB CDC On Boot | Enabled |
+| PSRAM | OPI PSRAM / Enabled |
+| Flash Size | 16MB |
+| Partition Scheme | Huge APP |
+| Serial Monitor | 115200 baud, Newline or Both NL & CR |
+
+## Dependencies
+
+The firmware uses `WiFi`, `WebServer`, `Wire`, `SPI`, `SD`, `Preferences`, `esp_camera`, `driver/i2s` and `Adafruit_NeoPixel`. Only `Adafruit_NeoPixel` has to be installed manually through Library Manager. The rest ship with the ESP32 board package.
+
+## Architecture
+
+The firmware is a single file organized into commented sections:
+
+1. **Pin map and globals:** every GPIO assignment as a `#define` constant (see the [Pinout](/hardware/pinout))
+2. **I2C helpers and bus recovery:** manual bus-clock toggling to recover a stuck I2C bus, used before camera and I2C device tests
+3. **LED control:** the RGB LED (WS2812B) and the 1 W LED, in direct GPIO and PWM modes
+4. **Camera resolution, FPS and memory helpers:** preset parsing and memory diagnostics
+5. **Camera init, capture and shutdown:** `esp_camera` setup, single-frame capture and a clean deinit
+6. **Camera reboot stability test:** a stress test that reboots the board N times and re-initializes the camera each time, keeping its state in NVS (`Preferences`)
+7. **HTTP server:** `/` (link page), `/jpg` (single JPEG) and `/stream` (MJPEG multipart stream)
+8. **Wi-Fi connection**
+9. **Device tests:** I2C scan, IMU read, microSD mount and write test, I2S microphone read test
+10. **Status and help:** the `status`, `pins` and `help` commands
+11. **Serial command parser:** dispatches every command in the table below
+
+## Configuration points
+
+- **Wi-Fi credentials:** `WIFI_SSID` and `WIFI_PASS` near the top of the file. The published copy uses the placeholders `YOUR_WIFI_SSID` and `YOUR_WIFI_PASSWORD`. Replace them before using Wi-Fi commands, and re-flash, because credentials cannot be set over serial at runtime.
+- **Default capture and stream resolution and JPEG quality:** the `captureFrameSize`, `captureJpegQuality`, `streamFrameSize` and `streamJpegQuality` globals, or change them at runtime with `capture_res` and `stream_res`.
+- **Stream FPS target and auto-timeout:** `streamTargetFps` (default 15) and `streamMaxMs` (default 15000 ms), changeable at runtime with `stream_fps` and `stream_timeout`.
+
+## Serial command reference
+
+| Category | Commands |
+| - | - |
+| Basic | `help`, `status`, `pins`, `reboot` |
+| I2C | `i2c`, `i2c_reset`, `pca_scan`, `imu`, `crypto` (also `atecc`, `secure`) |
+| Wi-Fi | `wifi`, `ip` |
+| Camera | `cam_init`, `cam_capture`, `stream_on`, `stream_off` (also `cam_off`, `camera_off`) |
+| Capture resolution | `capture_res <preset>`, with preset `low`, `medium`, `high` or `veryhigh` |
+| Stream resolution | `stream_res <preset>`, same presets |
+| Stream tuning | `stream_fps <1-30>`, `stream_timeout <ms>` |
+| Validation | `cam_status` (also `res_status`), `cam_reboot_test <1-20>`, `cam_reboot_clear`, `led_cam_test` |
+| LEDs | `rgb <r> <g> <b>`, `led on`, `led off`, `led blink`, `led pwm`, `led level <0-255>` |
+| Other | `sd` (also `sd_test`), `mic` |
+
+### HTTP endpoints
+
+Available once Wi-Fi is connected with `wifi`:
+
+| Path | Returns |
+| - | - |
+| `/` | A link page |
+| `/jpg` | A single JPEG capture |
+| `/stream` | An MJPEG stream. Enable it first with `stream_on` over serial |
+
+## Modifying the firmware
+
+This firmware has been physically tested as it is. If you change GPIO mappings, camera init parameters, clock settings or partition and flash settings, verify the change on real hardware and keep a copy of the known-working version. Pull requests that change hardware-dependent configuration should explain why, as described in the repository's [CONTRIBUTING.md](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/blob/main/CONTRIBUTING.md).

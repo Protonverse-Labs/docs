@@ -1,0 +1,72 @@
+---
+title: "Specifications"
+description: "Verified technical specifications for Proton AI Core Vision+, and the figures that have intentionally not been published yet."
+---
+
+Only verified values appear in the tables below. Figures that have not been measured are listed separately at the end instead of being estimated.
+
+## Processor and memory
+
+| Parameter | Value |
+| - | - |
+| Module | ESP32-S3-WROOM-1-N16R8 |
+| CPU | Dual-core Xtensa LX7 |
+| Flash | 16 MB |
+| PSRAM | 8 MB, OPI |
+
+## Connectivity
+
+| Parameter | Value |
+| - | - |
+| Wi-Fi | ESP32-S3 built-in radio, 2.4 GHz only (5 GHz is not supported) |
+| USB | USB-C, native ESP32-S3 USB used as a CDC serial port |
+| Bluetooth | Not implemented in the current firmware |
+
+## Camera
+
+| Parameter | Value |
+| - | - |
+| Sensor | OV5640, 5 MP (2592×1944 array), 1/4" optical format |
+| Module | SF4V564088BYC-ESP (per the module datasheet) |
+| Connector | 24-pin FPC, FFC2B28-24-G |
+| Data interface | 8-bit parallel plus SCCB (I2C) |
+| Lens | 3.0 mm EFL, F2.2, 76.6° field of view |
+| Firmware resolution presets | QVGA 320×240, VGA 640×480, SVGA 800×600, XGA 1024×768 |
+
+The OV5640 itself supports resolutions up to its native 5 MP, but the firmware currently exposes only the four presets above. See [Cameras](/hardware/cameras) and the [Camera guide](/guides/camera).
+
+## Onboard devices
+
+| Device | Part | Interface |
+| - | - | - |
+| IMU | ICM-42670-P | I2C, address 0x68 or 0x69 |
+| Secure element | ATECC608B-MAHDA-S | I2C, address 0x60 |
+| I/O expander | PCA9685BS,118, 16-channel PWM/LED driver | I2C, address 0x40 |
+| Microphone | ICS-43434 | I2S MEMS |
+| Storage | microSD, push-push slot | SPI |
+| Status LED | WS2812B-2020, addressable RGB | GPIO1 |
+| Auxiliary LED | 1 W LED, MOSFET-switched | GPIO48 |
+
+## Power
+
+| Parameter | Value |
+| - | - |
+| Inputs | USB-C, or 3.7 V Li-Po on a 2-pin connector |
+| Charging | MCP73831-based Li-Po charger (schematic label: 500 mA programmable) |
+| Protection | USBLC6-2SC6 USB ESD array, 2 A resettable fuse on the USB-C path, P-channel MOSFET reverse-polarity protection on the battery input |
+| Rails | 3.3 V main, 2.8 V and 1.5 V camera rails |
+
+## Not yet measured or published
+
+These are intentionally not stated until measured data exists:
+
+- Frame rate at any resolution
+- Current consumption and battery runtime
+- Input voltage limits and maximum charge or discharge current
+- Wireless range and throughput
+- Operating temperature range
+- Board dimensions and mounting-hole spacing
+- On-device AI performance (the board has no AI accelerator)
+- Industrial, CE and FCC certification
+
+If you see any of these stated as fact elsewhere, please [open an issue](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/issues).

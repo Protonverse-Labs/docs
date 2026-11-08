@@ -1,0 +1,96 @@
+---
+title: "Pinout"
+description: "GPIO assignments, the shared I2C bus and I2C device addresses for Proton AI Core Vision+."
+---
+
+Every assignment below comes from the `#define` pin map in the firmware (`Proton_AI_CoreVision_Firmware_V20.ino`) and is cross-checked against the approved schematic. If you are wiring against this board, trust this page over any inference from photos or connector position.
+
+<Warning>
+  Several of these pins are used by onboard peripherals. The camera SCCB lines (GPIO17, GPIO18) are shared with the main I2C bus, so anything else on that bus is affected when the camera is active.
+</Warning>
+
+## Camera (24-pin FPC)
+
+| Signal | GPIO | Notes |
+| - | -: | - |
+| PWDN | 2 | Power-down control |
+| RESET | 45 | Labeled `CAMERA_RET` on the schematic |
+| XCLK | 40 | Camera master clock |
+| SIOD (SDA) | 17 | Shared with the main I2C bus |
+| SIOC (SCL) | 18 | Shared with the main I2C bus |
+| VSYNC | 21 | |
+| HREF | 38 | |
+| PCLK | 11 | |
+
+### Camera data bus
+
+The firmware's constants use the ESP32-side names D0 to D7. The firmware's `pins` command and the OV5640 datasheet use the sensor-side names Y2 to Y9. They are the same 8 physical signals under two naming conventions.
+
+| Firmware name | Sensor name | GPIO |
+| - | - | -: |
+| D0 | Y2 | 13 |
+| D1 | Y3 | 47 |
+| D2 | Y4 | 14 |
+| D3 | Y5 | 3 |
+| D4 | Y6 | 12 |
+| D5 | Y7 | 42 |
+| D6 | Y8 | 41 |
+| D7 | Y9 | 39 |
+
+## I2C bus (shared)
+
+Used by the camera's SCCB interface, the IMU, the secure element and the I/O expander. Also broken out to a 4-pin header.
+
+| Signal | GPIO |
+| - | -: |
+| SDA | 17 |
+| SCL | 18 |
+
+| Device | I2C address |
+| - | - |
+| PCA9685 (I/O expander) | 0x40 |
+| ATECC608B (secure element) | 0x60 |
+| ICM-42670-P (IMU) | 0x68 or 0x69, depending on the address pin |
+
+## LEDs
+
+| Signal | GPIO |
+| - | -: |
+| WS2812B RGB status LED, data | 1 |
+| 1 W LED, MOSFET gate (PWM-capable) | 48 |
+
+## I2S microphone (ICS-43434)
+
+| Signal | GPIO |
+| - | -: |
+| BCLK | 16 |
+| DATA | 8 |
+| WS | 9 |
+
+## microSD (SPI)
+
+| Signal | GPIO |
+| - | -: |
+| CS | 5 |
+| MOSI | 6 |
+| CLK | 15 |
+| MISO | 10 |
+
+## Buttons
+
+| Button | Function |
+| - | - |
+| RESET | Hardware reset (EN) |
+| BOOT | Bootloader-entry strap (GPIO0) |
+
+## Headers
+
+| Header | Exposes | Notes |
+| - | - | - |
+| I2C, 4-pin | GPIO17 (SDA), GPIO18 (SCL) | Same bus as the camera, IMU, secure element and expander |
+| UART, 2×2 | A hardware UART, separate from the USB-C serial console | Exact GPIO assignment not yet verified |
+| GPIO/PWM expansion, 6-pin | PCA9685 channels LED0 to LED5 | I2C-controlled, not direct ESP32-S3 GPIOs |
+
+## A note on the schematic
+
+The approved schematic uses the reference designator "J2" twice, for the I2C header and for the battery connector. This is a cosmetic labeling issue and does not affect any GPIO assignment above, but keep it in mind when looking up "J2" in the schematic PDF.

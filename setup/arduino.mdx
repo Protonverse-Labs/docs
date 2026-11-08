@@ -1,0 +1,62 @@
+---
+title: "Arduino IDE setup"
+description: "Install the ESP32 board package, the required library and the exact build settings, then build and flash the firmware."
+---
+
+The firmware is built on the **Arduino ESP32 core** and flashed through Arduino IDE 2.x. ESP-IDF and PlatformIO project files are not provided, and those toolchains have not been set up or tested for this firmware.
+
+<Steps>
+  <Step title="Install Arduino IDE">
+    Download and install [Arduino IDE](https://www.arduino.cc/en/software) 2.x.
+  </Step>
+  <Step title="Install the ESP32 board package">
+    If the ESP32 package is not installed yet, open **Preferences** and add Espressif's board index URL to **Additional boards manager URLs**:
+
+    ```text
+    https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    ```
+
+    Then open **Tools → Board → Boards Manager**, search for `esp32` (by Espressif Systems) and click **Install**.
+  </Step>
+  <Step title="Install the required library">
+    Open **Tools → Manage Libraries**, search for `Adafruit NeoPixel` and install it.
+
+    The other libraries the firmware uses (`WiFi`, `WebServer`, `Wire`, `SPI`, `SD`, `Preferences`, `esp_camera`, `driver/i2s`) ship with the ESP32 board package.
+  </Step>
+  <Step title="Connect the board">
+    Connect the board with a data-capable USB-C cable. It enumerates as a USB serial device through the ESP32-S3's native USB, and no separate USB driver has been reported as necessary.
+  </Step>
+  <Step title="Select the board and settings">
+    In the **Tools** menu:
+
+    | Setting | Value |
+    | - | - |
+    | Board | ESP32S3 Dev Module |
+    | USB CDC On Boot | Enabled |
+    | PSRAM | OPI PSRAM / Enabled |
+    | Flash Size | 16MB |
+    | Partition Scheme | Huge APP |
+    | Port | The port for the board |
+
+    These values come from the firmware file's own header comment and are required. Other flash, PSRAM or partition settings can cause boot failures or camera initialization failures.
+  </Step>
+  <Step title="Open the firmware">
+    Open `firmware/proton-ai-core-vision-plus/Proton_AI_CoreVision_Firmware_V20.ino` from the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus).
+  </Step>
+  <Step title="Optional: configure Wi-Fi">
+    To use `wifi`, streaming or the HTTP endpoints, edit these two lines near the top of the file before flashing:
+
+    ```cpp
+    const char* WIFI_SSID = "YOUR_WIFI_SSID";
+    const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
+    ```
+
+    Do not commit real credentials back to a shared or public copy of the file.
+  </Step>
+  <Step title="Upload">
+    Click **Upload** (the arrow button). If the upload does not start, see [Troubleshooting](/resources/troubleshooting#board-not-detected-or-upload-fails).
+  </Step>
+  <Step title="Open the Serial Monitor and verify">
+    Open **Tools → Serial Monitor** at `115200` baud with line ending **Newline** or **Both NL & CR**. Type `status`: you should see PSRAM detection, Wi-Fi state, camera state and I2C ACK results for the IMU, secure element and I/O expander. Then run `cam_init` and `cam_capture` to confirm the camera, as described in the [Camera guide](/guides/camera).
+  </Step>
+</Steps>

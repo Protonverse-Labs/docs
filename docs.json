@@ -1,0 +1,108 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Proton AI Core Vision+",
+  "colors": {
+    "primary": "#078686",
+    "light": "#0AABAB",
+    "dark": "#001216"
+  },
+  "favicon": "/favicon.png",
+  "logo": {
+    "light": "/logo/logo.png",
+    "dark": "/logo/logo.png"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Docs",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started/quickstart",
+              "getting-started/hardware-overview"
+            ]
+          },
+          {
+            "group": "Hardware",
+            "pages": [
+              "hardware/specifications",
+              "hardware/pinout",
+              "hardware/cameras"
+            ]
+          },
+          {
+            "group": "Setup",
+            "pages": [
+              "setup/arduino",
+              "setup/platformio",
+              "setup/drivers"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/camera",
+              "guides/firmware",
+              "guides/ai-inference",
+              "guides/wifi-bluetooth",
+              "guides/examples"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "resources/troubleshooting",
+              "resources/downloads",
+              "resources/faq",
+              "resources/project-status",
+              "resources/roadmap"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Protonverse Studio",
+        "groups": [
+          {
+            "group": "Protonverse Studio",
+            "pages": [
+              "studio/overview"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:support@protonverse.io"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/Protonverse-Labs/proton-ai-core-vision-plus"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Your Board",
+      "href": "https://www.crowdsupply.com/protonverse-labs/proton-ai-core-vision-plus"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/protonverse",
+      "github": "https://github.com/Protonverse-Labs"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/platform/overview",
+      "destination": "/studio/overview"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+---
+title: "USB drivers"
+description: "Proton AI Core Vision+ uses native USB, so no extra driver has been reported as necessary. How to find the serial port and what to do if it does not appear."
+---
+
+## Do I need a driver?
+
+No additional USB driver installation has been reported as necessary. The board does not use a separate USB-to-serial chip. It uses the ESP32-S3's **native USB** as a CDC serial port, which is why the build setting **USB CDC On Boot: Enabled** is required.
+
+<Note>
+  If you have seen advice to install CP210x or CH340 drivers for ESP32 boards, it does not apply here. Those drivers are for boards with a separate USB-to-serial chip.
+</Note>
+
+## Find the serial port
+
+Connect the board with a data-capable USB-C cable, then check that a new serial port appears. The names below are typical for USB CDC devices.
+
+<Tabs>
+  <Tab title="Windows">
+    Open **Device Manager** and expand **Ports (COM & LPT)**. A new `COM` port should appear when the board is connected.
+  </Tab>
+  <Tab title="macOS">
+    In Terminal run:
+
+    ```bash
+    ls /dev/cu.*
+    ```
+
+    A new `/dev/cu.usbmodem...` entry should appear.
+  </Tab>
+  <Tab title="Linux">
+    In a terminal run:
+
+    ```bash
+    ls /dev/ttyACM*
+    ```
+
+    A new `/dev/ttyACM...` entry should appear. If you get a permission error in Arduino IDE, add your user to the `dialout` group (on some distributions the group is `uucp`), then log out and back in.
+  </Tab>
+</Tabs>
+
+In Arduino IDE the same port appears under **Tools → Port**.
+
+## The port does not appear
+
+Work through these in order:
+
+1. Use a USB-C cable that carries data. Many cables are power-only.
+2. In the Tools menu, confirm **USB CDC On Boot: Enabled**, then upload again.
+3. Try another USB port, or another cable.
+4. Force bootloader mode: hold **BOOT**, tap **RESET**, then release **BOOT**. This is the standard ESP32-S3 procedure. The board can then be flashed even if the running firmware is not responding.
+
+More failure modes are listed in [Troubleshooting](/resources/troubleshooting#board-not-detected-or-upload-fails).

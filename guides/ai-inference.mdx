@@ -1,0 +1,36 @@
+---
+title: "AI inference"
+description: "What Proton AI Core Vision+ does and does not do for AI today: no on-device inference in the published firmware, and how frames can be sent to a computer."
+---
+
+## Where things stand
+
+- The published firmware (V20) does **not** run any on-device AI or image inference.
+- The board has **no** dedicated neural processing unit or AI accelerator.
+- No inference performance figures exist, and none are published.
+
+"AI" is part of the Protonverse name. The board is meant as a platform for camera and vision projects. Nothing about on-device AI capabilities is committed to in the [Roadmap](/resources/roadmap), and [Project status](/resources/project-status) lists on-device AI acceleration under "not yet verified, not yet claimed".
+
+## Protonverse Studio's person-detection demo
+
+The camera panel of the [Protonverse Studio demo](/studio/overview) plays a recording captured from a physical board running a separate person-detection firmware. That build detects people (pedestrians), not faces, and it is **not** part of the V20 firmware or of the open repository. It is described here only so the demo is not mistaken for a feature of the published firmware.
+
+## Running inference on a computer instead
+
+The published firmware can already deliver camera frames over Wi-Fi, which is enough to run a model on a computer:
+
+- `/jpg` returns a single JPEG capture
+- `/stream` returns an MJPEG stream
+
+See [Wi-Fi and Bluetooth](/guides/wifi-bluetooth) for how to enable them. Any model, framework or code that consumes those frames on the computer side is your own. This project does not provide it, and no frame rate has been measured.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Camera guide" icon="camera" href="/guides/camera">
+    Capture and stream JPEG frames.
+  </Card>
+  <Card title="FAQ" icon="circle-question" href="/resources/faq">
+    Answers about AI, Bluetooth and availability.
+  </Card>
+</CardGroup>

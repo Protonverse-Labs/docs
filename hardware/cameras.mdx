@@ -1,0 +1,70 @@
+---
+title: "Cameras"
+description: "The OV5640 camera module on Proton AI Core Vision+: specifications, the 24-pin FPC connector, orientation and how to connect it."
+---
+
+Proton AI Core Vision+ is built around one camera module, the **OV5640**. It is connected to the board through a 24-pin FPC connector and is pre-attached on the reference hardware.
+
+## Camera module
+
+| Parameter | Value |
+| - | - |
+| Sensor | OV5640, 5 MP (2592×1944 array), 1/4" optical format |
+| Module | SF4V564088BYC-ESP (per the module datasheet) |
+| Lens | 3.0 mm EFL, F2.2, 76.6° field of view |
+| Interface | 8-bit parallel data bus plus SCCB (I2C) for sensor control |
+| Output used by the firmware | JPEG |
+
+<Note>
+  The OV5640 is the only camera that has been tested with this board. Other camera modules, including OV2640 and OV3660 modules, have not been tested and are not supported by the published firmware.
+</Note>
+
+## Connector
+
+| | |
+| - | - |
+| Reference | J1 |
+| Part | FFC2B28-24-G, 24-pin FPC |
+| Control bus | SCCB on GPIO17 and GPIO18, shared with the board's main I2C bus |
+
+The full signal list is on the [Pinout](/hardware/pinout) page.
+
+<Warning>
+  Because the camera's control lines share the I2C bus with the IMU, the secure element and the I/O expander, the camera must be switched off (`cam_off`) before those devices are tested. See the [Camera guide](/guides/camera#known-limitations).
+</Warning>
+
+## Power
+
+The camera module is supplied from rails dedicated to it on the board: a 2.8 V rail and a 1.5 V rail, in addition to the 3.3 V main rail. Current draw of the camera has not been measured.
+
+## Connecting the camera
+
+If your camera is already attached, you can skip this section. If you need to reseat or replace the cable:
+
+<Steps>
+  <Step title="Power the board off">
+    Unplug the USB-C cable, and disconnect the battery if one is attached.
+  </Step>
+  <Step title="Check the orientation">
+    The cable goes into connector J1 with its **contacts facing the board**, so the cable contacts and the connector fingers line up. If you are unsure, compare with the board photos in the [GitHub repository](https://github.com/Protonverse-Labs/proton-ai-core-vision-plus/tree/main/assets/board).
+  </Step>
+  <Step title="Seat the cable fully">
+    The cable must sit fully and evenly in the connector. A partly seated cable is the most common cause of `Camera init FAILED`.
+  </Step>
+  <Step title="Power on and test">
+    Reconnect USB-C, open the Serial Monitor at `115200` baud and run `cam_init` followed by `cam_capture`.
+  </Step>
+</Steps>
+
+If initialization fails, see [Troubleshooting](/resources/troubleshooting#camera-init-fails).
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Camera guide" icon="camera" href="/guides/camera">
+    Initialize the camera, capture JPEG frames and stream MJPEG.
+  </Card>
+  <Card title="Pinout" icon="plug" href="/hardware/pinout">
+    All camera signals and the shared I2C bus.
+  </Card>
+</CardGroup>
